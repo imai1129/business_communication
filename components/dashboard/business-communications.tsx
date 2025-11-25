@@ -12,13 +12,14 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { useMemo, useState } from "react"
-import { ArrowUpDown, CheckCircle2, ChevronDown, FileText, Paperclip, Filter } from "lucide-react"
+import { useMemo, useState, useLayoutEffect, useEffect, useCallback, useRef } from "react"
+import { ArrowUpDown, CheckCircle2, ChevronDown, FileText, Paperclip, Check, Filter } from "lucide-react"
 import { businessComms } from "@/data/business-communications"
 import { cn } from "@/lib/utils"
 
 type BusinessCommunicationsSectionProps = {
   forceExpanded?: boolean
+  forceFiltersOpen?: boolean
 }
 
 function StatusIcon({ done, hidden }: { done: boolean; hidden?: boolean }) {
@@ -33,7 +34,7 @@ function StatusIcon({ done, hidden }: { done: boolean; hidden?: boolean }) {
   return <div className={`${base} rounded-full border border-slate-300 bg-white`} />
 }
 
-export function BusinessCommunicationsSection({ forceExpanded = false }: BusinessCommunicationsSectionProps) {
+export function BusinessCommunicationsSection({ forceExpanded = false, forceFiltersOpen = false }: BusinessCommunicationsSectionProps) {
   const filterOptions = [
     "新作情報",
     "サービス",
@@ -46,8 +47,10 @@ export function BusinessCommunicationsSection({ forceExpanded = false }: Busines
     "障害情報（物流）",
   ]
   const [selectedFilters, setSelectedFilters] = useState<string[]>([])
-  const [showFilters, setShowFilters] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
+  const [categoryOverflow, setCategoryOverflow] = useState<Record<number, boolean>>({})
+  const categoryRefs = useRef<Record<number, HTMLDivElement | null>>({})
 
   const toggleFilter = (filter: string) => {
     setSelectedFilters((prev) => (prev.includes(filter) ? prev.filter((f) => f !== filter) : [...prev, filter]))
@@ -64,8 +67,43 @@ export function BusinessCommunicationsSection({ forceExpanded = false }: Busines
   )
 
   const previewCount = 4
+  const maxExpandedCount = 12
   const expanded = forceExpanded || isExpanded
-  const displayItems = expanded ? filteredBusinessComms : filteredBusinessComms.slice(0, previewCount + 1)
+  const filtersOpen = forceFiltersOpen || showFilters
+  const displayItems = expanded
+    ? forceExpanded
+      ? filteredBusinessComms
+      : filteredBusinessComms.slice(0, maxExpandedCount)
+    : filteredBusinessComms.slice(0, previewCount + 1)
+
+  const measureCategoryOverflow = useCallback(() => {
+    const next: Record<number, boolean> = {}
+    displayItems.forEach((item) => {
+      const el = categoryRefs.current[item.id]
+      if (el) {
+        next[item.id] = el.scrollWidth > el.clientWidth + 1
+      }
+    })
+
+    setCategoryOverflow((prev) => {
+      const prevKeys = Object.keys(prev)
+      const nextKeys = Object.keys(next)
+      if (prevKeys.length !== nextKeys.length) return next
+      for (const key of nextKeys) {
+        if (prev[key] !== next[key]) return next
+      }
+      return prev
+    })
+  }, [displayItems])
+
+  useLayoutEffect(() => {
+    measureCategoryOverflow()
+  }, [measureCategoryOverflow])
+
+  useEffect(() => {
+    window.addEventListener("resize", measureCategoryOverflow)
+    return () => window.removeEventListener("resize", measureCategoryOverflow)
+  }, [measureCategoryOverflow])
 
   return (
     <section className="space-y-4">
@@ -75,23 +113,25 @@ export function BusinessCommunicationsSection({ forceExpanded = false }: Busines
           <h2>業務連絡</h2>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant={selectedFilters.length > 0 ? "default" : "outline"}
-            size="sm"
-            className={cn(
-              "text-xs h-8 gap-1",
-              selectedFilters.length > 0 ? "bg-slate-800 text-white hover:bg-slate-700" : ""
-            )}
-            onClick={() => setShowFilters((prev) => !prev)}
-            >
-            <Filter className="h-4 w-4" />
-            <ChevronDown
+          {!forceFiltersOpen && (
+            <Button
+              variant={selectedFilters.length > 0 ? "default" : "outline"}
+              size="sm"
               className={cn(
-                "h-3 w-3 transition-transform",
-                showFilters ? "rotate-180" : ""
+                "text-xs h-8 gap-1",
+                selectedFilters.length > 0 ? "bg-slate-800 text-white hover:bg-slate-700" : ""
               )}
-            />
-          </Button>
+              onClick={() => setShowFilters((prev) => !prev)}
+            >
+              <Filter className="h-4 w-4" />
+              <ChevronDown
+                className={cn(
+                  "h-3 w-3 transition-transform",
+                  showFilters ? "rotate-180" : ""
+                )}
+              />
+            </Button>
+          )}
           <Button variant="outline" size="sm" className="text-xs h-8 gap-1 bg-transparent">
             <ArrowUpDown className="h-3 w-3" />
             新着順
@@ -99,47 +139,54 @@ export function BusinessCommunicationsSection({ forceExpanded = false }: Busines
           </Button>
         </div>
       </div>
-
-      {showFilters && (
+      {(filtersOpen || forceFiltersOpen) && (
         <ScrollArea className="w-full pb-2">
           <div className="flex flex-wrap gap-2">
             <Button
               variant={selectedFilters.length === 0 ? "default" : "outline"}
-              size="sm"
-              className={cn(
-                "h-7 text-xs",
-                selectedFilters.length === 0 ? "bg-black hover:bg-slate-800 text-white" : "text-slate-600"
-              )}
-              onClick={clearFilters}
-            >
-              ALL
-            </Button>
-            {filterOptions.map((filter) => {
-              const active = selectedFilters.includes(filter)
-              return (
-                <Button
-                  key={filter}
-                  variant={active ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "h-7 text-xs",
-                    active
-                      ? "bg-slate-800 text-white hover:bg-slate-700"
-                      : "text-slate-600 border-slate-300 hover:bg-slate-50 bg-transparent"
-                  )}
-                  onClick={() => toggleFilter(filter)}
-                >
-                  {filter}
-                </Button>
-              )
-            })}
-          </div>
+            size="sm"
+            className={cn(
+              "h-7 text-xs",
+              selectedFilters.length === 0 ? "bg-black hover:bg-slate-800 text-white" : "text-slate-600"
+            )}
+            onClick={clearFilters}
+          >
+            ALL
+          </Button>
+          {filterOptions.map((filter) => {
+            const active = selectedFilters.includes(filter)
+            return (
+              <Button
+                key={filter}
+                variant={active ? "default" : "outline"}
+                size="sm"
+                className={cn(
+                  "h-7 text-xs",
+                  active
+                    ? "bg-slate-800 text-white hover:bg-slate-700"
+                    : "text-slate-600 border-slate-300 hover:bg-slate-50 bg-transparent"
+                )}
+                onClick={() => toggleFilter(filter)}
+              >
+                {filter}
+              </Button>
+            )
+          })}
+        </div>
         </ScrollArea>
       )}
 
-      <div className="bg-slate-50/50 rounded-md border border-slate-100 divide-y divide-slate-100 max-h-[600px] overflow-y-auto custom-scrollbar">
+      <div
+        className={cn(
+          "rounded-md border border-slate-100 divide-y divide-slate-100",
+          expanded ? "" : "max-h-[600px] overflow-y-auto custom-scrollbar"
+        )}
+      >
         {displayItems.map((item, idx) => {
           const isPartial = !expanded && idx === previewCount
+          const maxCategoryChips = 4
+          const displayedCategories = item.categories.slice(0, maxCategoryChips)
+          const hasMoreCategories = item.categories.length > maxCategoryChips
           return (
             <Dialog key={item.id}>
               <DialogTrigger asChild>
@@ -162,26 +209,47 @@ export function BusinessCommunicationsSection({ forceExpanded = false }: Busines
                           item.status === "緊急"
                             ? "bg-red-400 hover:bg-red-500"
                             : "bg-blue-400 hover:bg-blue-500"
-                        } text-white border-none rounded-sm px-3 text-base font-semibold w-24 h-10 items-center justify-center`}
+                        } text-white border-none rounded-sm px-2 text-[14px] font-semibold min-w-[60px] h-8 items-center justify-center`}
                       >
                         {item.status}
                       </Badge>
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-medium text-slate-800 group-hover:text-[#00704A] transition-colors truncate">
+                    <h3 className="text-[14px] font-medium text-slate-800 group-hover:text-[#00704A] transition-colors truncate">
                       {item.title}
                     </h3>
-                    <div className="mt-1 flex items-center gap-1 flex-wrap">
-                      <p className="text-xs text-slate-500">対象：{item.audience}</p>
-                      {item.categories.map((cat) => (
-                        <Badge
-                          key={cat}
-                          className="bg-slate-100 text-slate-700 border-none h-5 px-2 text-[10px]"
-                        >
-                          {cat}
-                        </Badge>
-                      ))}
+                    <div className="mt-1 flex items-center gap-1 text-xs text-slate-500 min-w-0 overflow-hidden">
+                      <p className="text-xs text-slate-500 shrink-0">対象：{item.audience}</p>
+                      <div
+                        ref={(el) => {
+                          categoryRefs.current[item.id] = el
+                        }}
+                        className="relative flex items-center gap-1 flex-nowrap overflow-hidden min-w-0 pr-5"
+                      >
+                        {item.categories.map((cat) => (
+                          <Badge
+                            key={cat}
+                            className="bg-transparent text-slate-700 border-none h-6 px-1.5 text-[12px] rounded-full flex items-center gap-1 shrink-0"
+                          >
+                            <span className="text-slate-400 text-[12px]">#</span>
+                            {cat}
+                          </Badge>
+                        ))}
+                        {categoryOverflow[item.id] && (
+                          <div
+                            className="pointer-events-none absolute right-0 inset-y-0 flex items-center pl-1"
+                            style={{ backgroundColor: 'inherit' }}
+                          >
+                            <span
+                              className="text-slate-600 text-[12px] font-medium px-1"
+                              style={{ backgroundColor: 'inherit' }}
+                            >
+                              ...
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="flex flex-col items-end justify-start text-xs text-slate-400 whitespace-nowrap mt-1 ml-auto min-w-[72px] gap-1 text-right">
@@ -194,27 +262,53 @@ export function BusinessCommunicationsSection({ forceExpanded = false }: Busines
                   </div>
                 </div>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px]">
+              <DialogContent className="md:max-w-[1280px] max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="mb-2">
                     <Badge
                       className={`${
-                        item.status === "緊急" ? "bg-red-400" : "bg-blue-400"
-                      } text-white border-none w-24 justify-center`}
+                        item.status === "緊急" ? "bg-red-500" : "bg-blue-500"
+                      } text-white border-none rounded-sm px-2 text-[14px] font-semibold min-w-[60px] h-8 items-center justify-center`}
                     >
                       {item.status}
                     </Badge>
-                    <span className="text-sm text-slate-500">{item.date}</span>
                   </div>
-                  <DialogTitle className="text-xl">{item.title}</DialogTitle>
-                  <DialogDescription className="text-slate-500">発信元: {item.dept}</DialogDescription>
+                  <DialogTitle className="text-xl leading-snug text-slate-900">
+                    {item.title}
+                  </DialogTitle>
+                  <div className="space-y-1 text-[14px] mt-1">
+                    <p>送信部署: {item.dept}</p>
+                    <p>対象職位: {item.audience}</p>
+                    <p>公開日付: {item.date}</p>
+                  </div>
+                  <div className="mt-3 flex items-center gap-2 flex-wrap text-sm text-slate-600">
+                    <span className="font-medium">タグ:</span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {item.categories.map((cat) => (
+                        <Badge
+                          key={cat}
+                          className="bg-transparent text-slate-800 border-none h-7 px-2 text-[12px] rounded-full flex items-center gap-1"
+                        >
+                          <span className="text-slate-500 text-[12px]">#</span>
+                          {cat}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
                 </DialogHeader>
                 <div className="py-4">
-                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 min-h-[200px]">
-                    <p className="text-slate-700 leading-relaxed">{item.content}</p>
-                    <div className="mt-4 h-40 bg-slate-200 rounded flex items-center justify-center text-slate-400">
-                      添付画像イメージ
-                    </div>
+                  <div className="p-1">
+                    <p className="text-slate-800 leading-relaxed whitespace-pre-line">
+                      {item.content}
+                    </p>
+                  </div>
+                  <div className="mt-6 flex items-center justify-center gap-4">
+                    <Button variant="outline" className="min-w-36">
+                      <Check className="h-4 w-4 mr-1" /> 店内共有済
+                    </Button>
+                    <Button className="min-w-36">
+                      <Check className="h-4 w-4 mr-1" /> 対応済
+                    </Button>
                   </div>
                 </div>
               </DialogContent>

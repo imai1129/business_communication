@@ -21,4 +21,29 @@ export const hotTopics: HotTopic[] = [
     image: "/generic-placeholder-300px.png?height=300&width=300&text=PUMPKIN+LATTE",
     alt: "Pumpkin Latte",
   },
+  {
+    id: 4,
+    image: "/generic-placeholder-300px.png?height=300&width=300&text=PUMPKIN+LATTE",
+    alt: "Pumpkin Latte",
+  },
+  {
+    id: 5,
+    image: "/generic-placeholder-300px.png?height=300&width=300&text=PUMPKIN+LATTE",
+    alt: "Pumpkin Latte",
+  },
+  {
+    id: 6,
+    image: "/generic-placeholder-300px.png?height=300&width=300&text=PUMPKIN+LATTE",
+    alt: "Pumpkin Latte",
+  },
+  {
+    id: 7,
+    image: "/generic-placeholder-300px.png?height=300&width=300&text=PUMPKIN+LATTE",
+    alt: "Pumpkin Latte",
+  },
+  {
+    id: 8,
+    image: "/generic-placeholder-300px.png?height=300&width=300&text=PUMPKIN+LATTE",
+    alt: "Pumpkin Latte",
+  },
 ]
