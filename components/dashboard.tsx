@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { Home, User, Search, ImageIcon, Settings, LogOut, MessageSquare, ExternalLink } from "lucide-react"
+import { Home, User, Search, ImageIcon, Settings, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -74,43 +74,7 @@ export function Dashboard() {
           {/* Mission Banner */}
           <MissionAndValuesSection />
 
-          {/* Management Message */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-slate-700 font-medium">
-              <MessageSquare className="h-4 w-4" />
-              <h3>Management Message</h3>
-            </div>
-            <div className="relative aspect-video bg-slate-900 rounded-lg overflow-hidden group cursor-pointer">
-              <Image
-                src="/placeholder.svg?height=200&width=350&text=Video+Thumbnail"
-                alt="Video"
-                fill
-                className="object-cover opacity-80 group-hover:opacity-90 transition-opacity"
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-12 w-12 bg-red-600 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                  <div className="w-0 h-0 border-t-[8px] border-t-transparent border-l-[14px] border-l-white border-b-[8px] border-b-transparent ml-1"></div>
-                </div>
-              </div>
-              <div className="absolute top-3 left-3 flex items-center gap-2">
-                <div className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm overflow-hidden p-1">
-                  <Image
-                    src="/placeholder.svg?height=32&width=32&text=Logo"
-                    alt="Logo"
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                  />
-                </div>
-                <span className="text-white text-sm font-medium drop-shadow-md">Growing up in STARBUCKS</span>
-              </div>
-            </div>
-            <div className="text-right">
-              <a href="#" className="text-xs text-slate-500 hover:text-[#00704A] flex items-center justify-end gap-1">
-                もっと見る <ExternalLink className="h-3 w-3" />
-              </a>
-            </div>
-          </div>
+          {/* Management Message removed as requested */}
 
           {/* Link Collection */}
           <LinkCollectionSection />

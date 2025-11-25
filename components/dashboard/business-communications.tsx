@@ -172,7 +172,17 @@ export function BusinessCommunicationsSection({ forceExpanded = false }: Busines
                     <h3 className="text-sm font-medium text-slate-800 group-hover:text-[#00704A] transition-colors truncate">
                       {item.title}
                     </h3>
-                    <p className="text-xs text-slate-500 mt-1">対象：{item.audience}</p>
+                    <div className="mt-1 flex items-center gap-1 flex-wrap">
+                      <p className="text-xs text-slate-500">対象：{item.audience}</p>
+                      {item.categories.map((cat) => (
+                        <Badge
+                          key={cat}
+                          className="bg-slate-100 text-slate-700 border-none h-5 px-2 text-[10px]"
+                        >
+                          {cat}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
                   <div className="flex flex-col items-end justify-start text-xs text-slate-400 whitespace-nowrap mt-1 ml-auto min-w-[72px] gap-1 text-right">
                     <div className="h-5 w-full flex items-center justify-end">
