@@ -8,7 +8,7 @@ export type HotTopic = {
 export const hotTopics: HotTopic[] = [
   {
     id: 1,
-    image: "/slider/20251002_ManagementLetter.jpg",
+    image: "/slider/20251002_ManagementLetter.png",
     alt: "Management Letter",
   },
   {
