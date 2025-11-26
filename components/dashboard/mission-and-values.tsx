@@ -1,20 +1,19 @@
 "use client"
 
 import { missionValues } from "@/data/mission-and-values"
+import Image from "next/image"
 
 export function MissionAndValuesSection() {
   return (
     <div
-      className="text-white p-8 rounded-lg text-center shadow-sm relative overflow-hidden group cursor-pointer"
-      style={{ backgroundColor: missionValues.backgroundColor }}
+      className="relative rounded-lg overflow-hidden shadow-sm aspect-[400/187] cursor-pointer"
     >
-      <div className="relative z-10">
-        <h3 className="text-lg font-serif tracking-wider">{missionValues.title}</h3>
-        <h3 className="text-lg font-serif tracking-wider mt-1">{missionValues.subtitle}</h3>
-      </div>
-      <div
-        className="absolute inset-0 opacity-10 mix-blend-overlay"
-        style={{ backgroundImage: `url('${missionValues.textureImage}')` }}
+      <Image
+        src={missionValues.image}
+        alt={`${missionValues.title} ${missionValues.subtitle}`}
+        fill
+        className="object-cover"
+        priority
       />
     </div>
   )

@@ -46,7 +46,7 @@ export function HotTopicsSection() {
           {hotTopics.map((topic) => (
             <div
               key={topic.id}
-              className="relative h-32 w-32 md:h-40 md:w-40 lg:h-48 lg:w-48 rounded-lg overflow-hidden bg-amber-100 shrink-0"
+              className="relative aspect-square flex-[0_0_calc((100%-3rem)/4)] rounded-lg overflow-hidden bg-amber-100 shrink-0"
             >
               <Image
                 src={topic.image}

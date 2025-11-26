@@ -51,6 +51,12 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
   const [showFilters, setShowFilters] = useState(false)
   const [categoryOverflow, setCategoryOverflow] = useState<Record<number, boolean>>({})
   const categoryRefs = useRef<Record<number, HTMLDivElement | null>>({})
+  const [todoState, setTodoState] = useState<Record<number, boolean>>(() =>
+    Object.fromEntries(businessComms.map((item) => [item.id, item.todoDone]))
+  )
+  const [sharedState, setSharedState] = useState<Record<number, boolean>>(() =>
+    Object.fromEntries(businessComms.map((item) => [item.id, item.sharedDone]))
+  )
 
   const toggleFilter = (filter: string) => {
     setSelectedFilters((prev) => (prev.includes(filter) ? prev.filter((f) => f !== filter) : [...prev, filter]))
@@ -187,6 +193,8 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
           const maxCategoryChips = 4
           const displayedCategories = item.categories.slice(0, maxCategoryChips)
           const hasMoreCategories = item.categories.length > maxCategoryChips
+          const todoDone = todoState[item.id] ?? item.todoDone
+          const sharedDone = sharedState[item.id] ?? item.sharedDone
           return (
             <Dialog key={item.id}>
               <DialogTrigger asChild>
@@ -198,15 +206,15 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                   )}
                 >
                   {isPartial && <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />}
-                  <div className="mt-1 shrink-0 flex items-center gap-3 ">
-                    <div className="flex items-center gap-2 min-w-[48px]">
-                      <StatusIcon done={item.todoDone} hidden={!item.todoRequired} />
-                      <StatusIcon done={item.sharedDone} />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        className={`${
-                          item.status === "緊急"
+                    <div className="mt-1 shrink-0 flex items-center gap-3 ">
+                      <div className="flex items-center gap-2 min-w-[48px]">
+                        <StatusIcon done={todoDone} hidden={!item.todoRequired} />
+                        <StatusIcon done={sharedDone} />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          className={`${
+                            item.status === "緊急"
                             ? "bg-red-400 hover:bg-red-500"
                             : "bg-blue-400 hover:bg-blue-500"
                         } text-white border-none rounded-sm px-2 text-[14px] font-semibold min-w-[60px] h-8 items-center justify-center`}
@@ -303,12 +311,38 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                     </p>
                   </div>
                   <div className="mt-6 flex items-center justify-center gap-4">
-                    <Button variant="outline" className="min-w-36">
-                      <Check className="h-4 w-4 mr-1" /> 店内共有済
+                    <Button
+                      variant={sharedDone ? "default" : "outline"}
+                      className="min-w-40"
+                      onClick={() =>
+                        setSharedState((prev) => ({ ...prev, [item.id]: !(prev[item.id] ?? item.sharedDone) }))
+                      }
+                      aria-pressed={sharedDone}
+                    >
+                      <span className="flex items-center gap-1">
+                        <Check className="h-4 w-4" />
+                        {sharedDone ? "店内共有済み" : "店内共有済にする"}
+                      </span>
                     </Button>
-                    <Button className="min-w-36">
-                      <Check className="h-4 w-4 mr-1" /> 対応済
-                    </Button>
+                    {item.todoRequired && (
+                      <Button
+                        className="min-w-40"
+                        variant={todoDone ? "default" : "outline"}
+                        onClick={() => {
+                          const next = !todoDone
+                          setTodoState((prev) => ({ ...prev, [item.id]: next }))
+                          if (next) {
+                            setSharedState((prev) => ({ ...prev, [item.id]: true }))
+                          }
+                        }}
+                        aria-pressed={todoDone}
+                      >
+                        <span className="flex items-center gap-1">
+                          <Check className="h-4 w-4" />
+                          {todoDone ? "対応実施済み" : "対応実施済にする"}
+                        </span>
+                      </Button>
+                    )}
                   </div>
                 </div>
               </DialogContent>

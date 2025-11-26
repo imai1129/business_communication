@@ -1,16 +1,16 @@
 # Mission and values 仕様
 
 ## 役割
-- 右カラム上部でブランドメッセージを示す静的バナー領域。
+- 右カラム上部でブランドメッセージ画像を表示する静的バナー領域。
 
 ## 構成
 - ソース: `components/dashboard/mission-and-values.tsx`。
-- レイアウト: 矩形カードに中央揃えの2行テキスト。
-- 装飾: 角丸・ボックスシャドウ・テクスチャ画像を `absolute` で重ね（10%不透明）。
-- テキスト: "OUR MISSION" / "PROMISES & VALUES"（フォントは `font-serif` 指定）。
+- レイアウト: 矩形カードに背景画像を全面表示するのみ（テキストオーバーレイなし）。
+- 装飾: 角丸・ボックスシャドウ。アスペクト比は 400/187 に固定。
 
 ## データ/挙動
-- `data/mission-and-values.ts` の単一オブジェクトを使用（title/subtitle/backgroundColor/textureImage）。
+- `data/mission-and-values.ts` の単一オブジェクトを使用（title/subtitle/image）。
+- 背景画像は `/public/ourmission.png`（400x187）。テキストは描き込まれた画像をそのまま表示。
 - 完全静的。クリック挙動やリンクは未実装（`cursor-pointer` 付与のみ）。
 
 ## 今後の検討メモ

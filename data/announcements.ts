@@ -4,6 +4,7 @@ export type Announcement = {
   date: string
   image?: string
   content: string
+  category: "お知らせ" | "メンテナンス"
 }
 
 export const announcements: Announcement[] = [
@@ -12,6 +13,7 @@ export const announcements: Announcement[] = [
     title: "WinterPh1プロモーション情報掲載開始",
     date: "2025/11/18 18:52",
     image: "/placeholder.svg?height=80&width=80&text=Winter",
+    category: "お知らせ",
     content: "Winter Ph1プロモーションの詳細情報が掲載されました。新しいドリンクやフードのラインナップをご確認ください。",
   },
   {
@@ -19,6 +21,7 @@ export const announcements: Announcement[] = [
     title: "要件定義MTGは有意義だ",
     date: "2025/11/18 15:17",
     image: "/placeholder.svg?height=80&width=80&text=MTG",
+    category: "お知らせ",
     content: "本日の要件定義ミーティングの議事録です。決定事項とネクストアクションを確認してください。",
   },
   {
@@ -26,6 +29,7 @@ export const announcements: Announcement[] = [
     title: "10月1日より秋限定“キャラメルパンプキンラテ”を販売開始します",
     date: "2025/11/14 20:32",
     image: "/placeholder.svg?height=80&width=80&text=Latte",
+    category: "お知らせ",
     content: "秋の味覚を楽しめるキャラメルパンプキンラテが登場します。販売期間と販促ツールについて。",
   },
   {
@@ -33,6 +37,7 @@ export const announcements: Announcement[] = [
     title: "SBJ健康保険組合からのお知らせ",
     date: "2025/11/14 20:30",
     image: "/placeholder.svg?height=80&width=80&text=Health",
+    category: "お知らせ",
     content: "健康診断の申し込み受付を開始しました。対象者は期間内に申し込みを行ってください。",
   },
   {
@@ -40,6 +45,7 @@ export const announcements: Announcement[] = [
     title: "playwright test 20251106",
     date: "2025/11/06 15:37",
     image: "/placeholder.svg?height=80&width=80&text=Test",
+    category: "メンテナンス",
     content: "自動テストの実行結果レポートです。",
   },
   {
@@ -47,6 +53,7 @@ export const announcements: Announcement[] = [
     title: "これはテスト",
     date: "2025/10/08 17:50",
     image: "/placeholder.svg?height=80&width=80&text=Test",
+    category: "メンテナンス",
     content: "システム通知のテスト配信です。",
   },
 ]
