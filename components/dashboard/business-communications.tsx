@@ -153,7 +153,9 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
             size="sm"
             className={cn(
               "h-7 text-xs",
-              selectedFilters.length === 0 ? "bg-black hover:bg-slate-800 text-white" : "text-slate-600"
+              selectedFilters.length === 0
+                ? "bg-[color:var(--brand-green)] hover:bg-[color:var(--brand-green)] text-white"
+                : "text-slate-600"
             )}
             onClick={clearFilters}
           >
@@ -169,7 +171,7 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                 className={cn(
                   "h-7 text-xs",
                   active
-                    ? "bg-slate-800 text-white hover:bg-slate-700"
+                    ? "bg-[color:var(--brand-green)] hover:bg-[color:var(--brand-green)] text-white"
                     : "text-slate-600 border-slate-300 hover:bg-slate-50 bg-transparent"
                 )}
                 onClick={() => toggleFilter(filter)}
@@ -213,15 +215,17 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge
-                          className={`${
+                          className={cn(
                             item.status === "緊急"
-                            ? "bg-red-400 hover:bg-red-500"
-                            : "bg-blue-400 hover:bg-blue-500"
-                        } text-white border-none rounded-sm px-2 text-[14px] font-semibold min-w-[60px] h-8 items-center justify-center`}
-                      >
-                        {item.status}
-                      </Badge>
-                    </div>
+                              ? "bg-red-400 hover:bg-red-500"
+                              : "bg-blue-400 hover:bg-blue-500",
+                            item.status === "通常" ? "opacity-0" : "",
+                            "text-white border-none rounded-sm px-2 text-[14px] font-semibold min-w-[60px] h-8 items-center justify-center"
+                          )}
+                        >
+                          {item.status}
+                        </Badge>
+                      </div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-[14px] font-medium text-slate-800 group-hover:text-[#00704A] transition-colors truncate">

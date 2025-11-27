@@ -49,7 +49,9 @@ export function AnnouncementsSection({ showListLink = true }: AnnouncementsSecti
             variant={active ? "default" : "outline"}
             size="sm"
             className={`h-7 text-xs ${
-              active ? "bg-slate-800 text-white" : "text-slate-600 border-slate-300 hover:bg-slate-50 bg-transparent"
+              active
+                ? "bg-[color:var(--brand-green)] hover:bg-[color:var(--brand-green)] text-white"
+                : "text-slate-600 border-slate-300 hover:bg-slate-50 bg-transparent"
             }`}
             onClick={() => setSelectedFilter(filter)}
           >
