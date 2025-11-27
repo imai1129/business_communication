@@ -5,9 +5,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ArrowUpDown, ChevronDown, FileText } from "lucide-react"
 import { announcements } from "@/data/announcements"
 import Image from "next/image"
+import Link from "next/link"
 import { useMemo, useState } from "react"
 
-export function AnnouncementsSection() {
+type AnnouncementsSectionProps = {
+  showListLink?: boolean
+}
+
+export function AnnouncementsSection({ showListLink = true }: AnnouncementsSectionProps) {
   const filters = ["ALL", "お知らせ", "メンテナンス"] as const
   const [selectedFilter, setSelectedFilter] = useState<(typeof filters)[number]>("ALL")
 
@@ -84,6 +89,13 @@ export function AnnouncementsSection() {
           </Dialog>
         ))}
       </ul>
+      {showListLink && (
+        <div className="flex justify-center pt-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/announcements">一覧ページへ</Link>
+          </Button>
+        </div>
+      )}
     </section>
   )
 }
