@@ -274,7 +274,7 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                   </div>
                 </div>
               </DialogTrigger>
-              <DialogContent className="md:max-w-[1280px] max-h-[80vh] overflow-y-auto">
+              <DialogContent className="w-[90vw] md:w-[60vw] md:max-w-[1280px] max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
                   <div className="mb-2">
                     <Badge
