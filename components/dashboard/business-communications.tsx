@@ -28,7 +28,7 @@ function StatusIcon({ done, hidden }: { done: boolean; hidden?: boolean }) {
   if (done)
     return (
       <div className={base}>
-        <CheckCircle2 className="h-5 w-5 text-green-500" />
+        <CheckCircle2 className="h-5 w-5 text-[color:var(--brand-green)]" />
       </div>
     )
   return <div className={`${base} rounded-full border border-slate-300 bg-white`} />
@@ -247,25 +247,25 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                         ref={(el) => {
                           categoryRefs.current[item.id] = el
                         }}
-                        className="relative flex items-center gap-1 flex-nowrap overflow-hidden min-w-0 pr-5"
+                        className="relative flex items-center gap-3 flex-nowrap overflow-hidden min-w-0 pr-5 px-1 py-0.5"
                       >
                         {item.categories.map((cat) => (
                           <Badge
                             key={cat}
-                            className="bg-transparent text-slate-700 border-none h-6 px-1.5 text-[12px] rounded-full flex items-center gap-1 shrink-0"
+                            className="bg-[#B7D9CB] text-slate-800 border-none h-6 px-2 text-[11px] rounded-sm flex items-center gap-1 shrink-0"
                           >
-                            <span className="text-slate-400 text-[12px]">#</span>
+                            <span className="text-slate-400 text-[11px]">#</span>
                             {cat}
                           </Badge>
                         ))}
                         {categoryOverflow[item.id] && (
                           <div
                             className="pointer-events-none absolute right-0 inset-y-0 flex items-center pl-1"
-                            style={{ backgroundColor: 'inherit' }}
+                            style={{ backgroundColor: "transparent" }}
                           >
                             <span
                               className="text-slate-600 text-[12px] font-medium px-1"
-                              style={{ backgroundColor: 'inherit' }}
+                              style={{ backgroundColor: "transparent" }}
                             >
                               ...
                             </span>
@@ -384,13 +384,6 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
         })}
       </div>
       {!expanded && !forceExpanded && filteredBusinessComms.length > previewCount + 1 && (
-        <div className="flex justify-center mt-3">
-          <Button variant="outline" size="sm" onClick={() => setIsExpanded(true)}>
-            もっと見る
-          </Button>
-        </div>
-      )}
-      {expanded && !forceExpanded && (
         <div className="flex justify-center mt-3">
           <Button variant="outline" size="sm" asChild>
             <Link href="/business-communications">一覧ページへ</Link>
