@@ -30,15 +30,8 @@ const baseBusinessComms: BusinessComm[] = [
     hasAttachment: false,
     categories: [
       "業務連絡（緊急）",
-      "障害情報（物流）",
-      "対象:バリスタ向け",
-      "新作情報",
-      "サービス",
-      "業務連絡（プロモ）",
       "障害情報（システム）",
-      "業務連絡（通常）",
-      "配送",
-      "対象:SM",
+      "対象:バリスタ向け",
     ],
   },
   {

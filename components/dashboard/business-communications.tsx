@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useMemo, useState, useLayoutEffect, useEffect, useCallback, useRef } from "react"
-import { ArrowUpDown, CheckCircle2, ChevronDown, FileText, Paperclip, Check, Filter } from "lucide-react"
+import { ArrowUpDown, CheckCircle2, ChevronDown, FileText, Paperclip, Check, Filter, Megaphone, Printer } from "lucide-react"
 import { businessComms } from "@/data/business-communications"
 import { cn } from "@/lib/utils"
 
@@ -32,6 +32,16 @@ function StatusIcon({ done, hidden }: { done: boolean; hidden?: boolean }) {
       </div>
     )
   return <div className={`${base} rounded-full border border-slate-300 bg-white`} />
+}
+
+function SharedIcon({ done }: { done: boolean }) {
+  const base = "h-5 w-5 flex items-center justify-center"
+  const tone = done ? "text-[color:var(--brand-green)]" : "text-slate-300"
+  return (
+    <div className={base} aria-label={done ? "店内共有済み" : "未共有"}>
+      <Megaphone className={`h-4 w-4 ${tone}`} />
+    </div>
+  )
 }
 
 export function BusinessCommunicationsSection({ forceExpanded = false, forceFiltersOpen = false }: BusinessCommunicationsSectionProps) {
@@ -211,7 +221,7 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                     <div className="mt-1 shrink-0 flex items-center gap-3 ">
                       <div className="flex items-center gap-2 min-w-[48px]">
                         <StatusIcon done={todoDone} hidden={!item.todoRequired} />
-                        <StatusIcon done={sharedDone} />
+                        <SharedIcon done={sharedDone} />
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge
@@ -274,79 +284,98 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                   </div>
                 </div>
               </DialogTrigger>
-              <DialogContent className="w-[90vw] md:w-[60vw] md:max-w-[1280px] max-h-[80vh] overflow-y-auto">
-                <DialogHeader>
-                  <div className="mb-2">
-                    <Badge
-                      className={`${
-                        item.status === "緊急" ? "bg-red-500" : "bg-blue-500"
-                      } text-white border-none rounded-sm px-2 text-[14px] font-semibold min-w-[60px] h-8 items-center justify-center`}
-                    >
-                      {item.status}
-                    </Badge>
-                  </div>
-                  <DialogTitle className="text-xl leading-snug text-slate-900">
-                    {item.title}
-                  </DialogTitle>
-                  <div className="space-y-1 text-[14px] mt-1">
-                    <p>送信部署: {item.dept}</p>
-                    <p>対象職位: {item.audience}</p>
-                    <p>公開日付: {item.date}</p>
-                  </div>
-                  <div className="mt-3 flex items-center gap-2 flex-wrap text-sm text-slate-600">
-                    <span className="font-medium">タグ:</span>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {item.categories.map((cat) => (
-                        <Badge
-                          key={cat}
-                          className="bg-transparent text-slate-800 border-none h-7 px-2 text-[12px] rounded-full flex items-center gap-1"
-                        >
-                          <span className="text-slate-500 text-[12px]">#</span>
-                          {cat}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </DialogHeader>
-                <div className="py-4">
-                  <div className="p-1">
-                    <p className="text-slate-800 leading-relaxed whitespace-pre-line">
-                      {item.content}
-                    </p>
-                  </div>
-                  <div className="mt-6 flex items-center justify-center gap-4">
-                    <Button
-                      variant={sharedDone ? "default" : "outline"}
-                      className="min-w-40"
-                      onClick={() =>
-                        setSharedState((prev) => ({ ...prev, [item.id]: !(prev[item.id] ?? item.sharedDone) }))
-                      }
-                      aria-pressed={sharedDone}
-                    >
-                      <span className="flex items-center gap-1">
-                        <Check className="h-4 w-4" />
-                        {sharedDone ? "店内共有済み" : "店内共有済にする"}
-                      </span>
-                    </Button>
-                    {item.todoRequired && (
+              <DialogContent className="business-comm-dialog w-[90vw] md:w-[60vw] md:max-w-[1280px] max-h-[80vh] overflow-y-auto">
+                <div role="document" className="business-comm-print-area">
+                  <DialogHeader>
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="mb-2">
+                          <Badge
+                            className={`${
+                              item.status === "緊急" ? "bg-red-500" : "bg-blue-500"
+                            } text-white border-none rounded-sm px-2 text-[14px] font-semibold min-w-[60px] h-8 items-center justify-center`}
+                          >
+                            {item.status}
+                          </Badge>
+                        </div>
+                        <DialogTitle className="text-xl leading-snug text-slate-900">
+                          {item.title}
+                        </DialogTitle>
+                      </div>
                       <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-1 hidden print:hidden"
+                        onClick={() => window.print()}
+                        aria-hidden
+                        tabIndex={-1}
+                      >
+                        <span className="flex items-center gap-1">
+                          <Printer className="h-4 w-4" />
+                          印刷
+                        </span>
+                      </Button>
+                    </div>
+                    <div className="space-y-1 text-[14px] mt-2">
+                      <p>送信部署: {item.dept}</p>
+                      <p>対象職位: {item.audience}</p>
+                      <p>公開日付: {item.date}</p>
+                    </div>
+                    <div className="mt-3 flex items-center gap-2 flex-wrap text-sm text-slate-600">
+                      <span className="font-medium">タグ:</span>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {item.categories.map((cat) => (
+                          <Badge
+                            key={cat}
+                            className="bg-transparent text-slate-800 border-none h-7 px-2 text-[12px] rounded-full flex items-center gap-1"
+                          >
+                            <span className="text-slate-500 text-[12px]">#</span>
+                            {cat}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </DialogHeader>
+                  <div className="py-4">
+                    <div className="p-1">
+                      <p className="text-slate-800 leading-relaxed whitespace-pre-line">
+                        {item.content}
+                      </p>
+                    </div>
+                    <div className="mt-6 flex items-center justify-center gap-4">
+                      <Button
+                        variant={sharedDone ? "default" : "outline"}
                         className="min-w-40"
-                        variant={todoDone ? "default" : "outline"}
-                        onClick={() => {
-                          const next = !todoDone
-                          setTodoState((prev) => ({ ...prev, [item.id]: next }))
-                          if (next) {
-                            setSharedState((prev) => ({ ...prev, [item.id]: true }))
-                          }
-                        }}
-                        aria-pressed={todoDone}
+                        onClick={() =>
+                          setSharedState((prev) => ({ ...prev, [item.id]: !(prev[item.id] ?? item.sharedDone) }))
+                        }
+                        aria-pressed={sharedDone}
                       >
                         <span className="flex items-center gap-1">
                           <Check className="h-4 w-4" />
-                          {todoDone ? "対応実施済み" : "対応実施済にする"}
+                          {sharedDone ? "店内共有済み" : "店内共有済にする"}
                         </span>
                       </Button>
-                    )}
+                      {item.todoRequired && (
+                        <Button
+                          className="min-w-40"
+                          variant={todoDone ? "default" : "outline"}
+                          onClick={() => {
+                            const next = !todoDone
+                            setTodoState((prev) => ({ ...prev, [item.id]: next }))
+                            if (next) {
+                              setSharedState((prev) => ({ ...prev, [item.id]: true }))
+                            }
+                          }}
+                          aria-pressed={todoDone}
+                        >
+                          <span className="flex items-center gap-1">
+                            <Check className="h-4 w-4" />
+                            {todoDone ? "対応実施済み" : "対応実施済にする"}
+                          </span>
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </DialogContent>

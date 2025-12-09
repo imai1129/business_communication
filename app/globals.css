@@ -124,6 +124,75 @@
   body {
     @apply bg-background text-foreground;
   }
+  .page-shell {
+    position: relative;
+    min-height: 100vh;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+  html,
+  body {
+    width: auto !important;
+    max-width: none !important;
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: static !important;
+  }
+  body > * {
+    display: none !important;
+  }
+  body > [data-radix-portal] {
+    display: block !important;
+    position: static !important;
+  }
+  body > [data-radix-portal] > :not(.business-comm-dialog) {
+    display: none !important;
+  }
+  .business-comm-dialog {
+    position: static !important;
+    transform: none !important;
+    translate: 0 !important;
+    --tw-translate-x: 0 !important;
+    --tw-translate-y: 0 !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: white !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    display: block !important;
+  }
+  .business-comm-dialog [role="document"] {
+    width: 100% !important;
+    max-width: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    background: white !important;
+  }
+  [data-radix-dialog-overlay],
+  .print-hidden,
+  .business-comm-dialog .print-hidden {
+    display: none !important;
+  }
 }
 
 @layer utilities {

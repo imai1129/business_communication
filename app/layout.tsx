@@ -16,8 +16,10 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={`font-sans antialiased`}>
-        {children}
-        <Analytics />
+        <div className="page-shell">
+          {children}
+          <Analytics />
+        </div>
       </body>
     </html>
   )
