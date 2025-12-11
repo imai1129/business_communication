@@ -303,14 +303,13 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                         </DialogTitle>
                       </div>
                       <Button
-                        variant="outline"
+                        variant="default"
                         size="sm"
-                        className="mt-1 hidden print:hidden"
+                        className="mt-1 print:hidden h-10 px-4 rounded-full bg-[color:var(--brand-green)] text-white hover:bg-[color:var(--brand-green)]/90 shadow-md shadow-[color:var(--brand-green)]/25"
                         onClick={() => window.print()}
-                        aria-hidden
-                        tabIndex={-1}
+                        aria-label="この業務連絡を印刷"
                       >
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center gap-1 font-medium">
                           <Printer className="h-4 w-4" />
                           印刷
                         </span>
