@@ -212,13 +212,13 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
               <DialogTrigger asChild>
                 <div
                   className={cn(
-                    "p-3 hover:bg-slate-50 transition-colors cursor-pointer group flex items-start gap-3 relative",
+                    "py-2.5 px-3 hover:bg-slate-50 transition-colors cursor-pointer group flex items-start gap-2 relative",
                     item.status === "緊急" ? "bg-red-50" : "",
                     isPartial ? "max-h-24 overflow-hidden" : ""
                   )}
                 >
                   {isPartial && <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />}
-                    <div className="mt-1 shrink-0 flex items-center gap-3 ">
+                    <div className="mt-0.5 shrink-0 flex items-center gap-2 ">
                       <div className="flex items-center gap-2 min-w-[48px]">
                         <StatusIcon done={todoDone} hidden={!item.todoRequired} />
                         <SharedIcon done={sharedDone} />
@@ -241,7 +241,7 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                     <h3 className="text-[14px] font-medium text-slate-800 group-hover:text-[#00704A] transition-colors truncate">
                       {item.title}
                     </h3>
-                    <div className="mt-1 flex items-center gap-1 text-xs text-slate-500 min-w-0 overflow-hidden">
+                    <div className="mt-0.5 flex items-center gap-1 text-xs text-slate-500 min-w-0 overflow-hidden">
                       <p className="text-xs text-slate-500 shrink-0">対象：{item.audience}</p>
                       <div
                         ref={(el) => {
@@ -274,7 +274,7 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end justify-start text-xs text-slate-400 whitespace-nowrap mt-1 ml-auto min-w-[72px] gap-1 text-right">
+                  <div className="flex flex-col items-end justify-start text-xs text-slate-400 whitespace-nowrap mt-0.5 ml-auto min-w-[72px] gap-0.5 text-right">
                     <div className="h-5 w-full flex items-center justify-end">
                       {item.hasAttachment && (
                         <Paperclip className="h-5 w-5 text-slate-900 shrink-0" aria-label="添付あり" />
