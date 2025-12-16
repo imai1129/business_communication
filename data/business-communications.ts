@@ -6,12 +6,15 @@ export type BusinessComm = {
   dept: string
   date: string
   content: string
+  publishPeriod?: { start: string; end: string }
+  todoPeriod?: { start: string; end: string }
+  images?: { src: string; alt: string }[]
   todoRequired: boolean
   todoDone: boolean
   sharedDone: boolean
   audience: "全PTR" | "SSV以上" | "SM" | "社員"
   hasAttachment: boolean
-  categories: string[]
+  categories: string[],
 }
 
 const baseBusinessComms: BusinessComm[] = [
@@ -23,16 +26,13 @@ const baseBusinessComms: BusinessComm[] = [
     dept: "営業企画本部",
     date: "2025/12/01 09:00",
     content: "11/26（水） - 12/1（月）の期間、GREENS導入済み店舗において、シナモンロールの販売価格に誤りがあったことが判明しました。お客様の不利益はなく、現在は正しい価格に修正されています。\n\n【対象店舗】\nGREENS導入済み全店舗\n\n【誤設定価格】\n税込270円 → 正しくは税込300円\n\n【対応方法】\n1. 既に購入されたお客様には、差額分の返金対応をお願いします。レシートをお持ちの場合は確認の上、返金処理を行ってください。\n2. レシートがない場合でも、購入日時と商品名を確認できれば返金対応をお願いします。\n3. 返金対応後、簡単なメモ（日時、金額、理由）を店舗内で保管してください。\n\n【問い合わせ先】\n不明点がある場合は、営業企画本部（内線1234）までご連絡ください。\n\nお客様にはご迷惑をおかけし、誠に申し訳ございません。今後このような事態が発生しないよう、再発防止策を講じてまいります。ご理解とご協力のほど、よろしくお願いいたします。",
+    publishPeriod: { start: "2025/11/26", end: "2025/12/05" },
     todoRequired: false,
     todoDone: false,
     sharedDone: false,
     audience: "全PTR",
     hasAttachment: false,
-    categories: [
-      "業務連絡（緊急）",
-      "障害情報（システム）",
-      "対象:バリスタ向け",
-    ],
+    categories: ["オペレーション", "災害"],
   },
   {
     id: 1000,
@@ -41,13 +41,15 @@ const baseBusinessComms: BusinessComm[] = [
     title: "【長文テスト】秋プロモ総合運用ガイドライン（店内共有・対応必須）",
     dept: "営業企画本部",
     date: "2025/11/30 09:00",
+    publishPeriod: { start: "2025/11/15", end: "2025/12/15" },
+    todoPeriod: { start: "2025/11/15", end: "2026/01/15" },
     content: `各店の皆様、いつも運営にご協力いただきありがとうございます。\n\n本連絡は「秋プロモ」運用に関する総合ガイドラインです。初週〜3週目に想定される問い合わせ・混雑・在庫変動に対し、店舗で統一して対応できるよう、下記の観点で詳細に整理しました。必ず店内で共有し、朝礼・終礼でポイントを確認のうえ運用してください。\n\n【1. 販促物/掲示物】\n- 入口Aスタンド：当週キービジュアルを掲示。雨天時は店内側に移設。\n- レジ前POP：会計列が伸びる時間帯は三角POPをカトラリー付近へ集約し、導線を確保。\n- バックヤード掲示：最新版の運用PDF（最終更新: 11/30）に差し替え。旧版は破棄。\n\n【2. レジでの声掛けテンプレート】\n- 基本：『期間限定の◯◯ラテがご好評です。温かいお飲み物いかがですか？』\n- 混雑時短縮：『◯◯ラテおすすめです』\n- アップセル例：『セットで新作マフィンはいかがでしょうか』\n\n【3. 在庫・発注・仕込み】\n- 初週は予測が不安定：既存人気商品の発注を微減し、バックヤードの置き場を確保。\n- 天候影響：気温低下時はホット比率上昇を想定。抽出待ち解消のため、仕込みを前倒し。\n- アレルゲン/表記：新規メニューラベルは必ずダブルチェック（誤表記防止）。\n\n【4. オペレーション（ピークタイム）】\n- モバイルオーダー：ピーク帯は一時的に受け付け制限を検討（マネジャー判断）。\n- レジ配備：経験者をレジ前に、新人はドリンク作成補助へ配置。\n- 事故防止：熱湯取り扱い時は呼称確認（『ホット上がります』）を徹底。\n\n【5. お客様対応（一次/二次）】\n- 一次：傾聴→事実確認→謝意→代替提案の順。\n- 二次：重大案件はエスカレーション表に従い報告（写真/時刻/レシート控え）。\n- SNS/撮影：従来運用を踏襲。混雑時は安全確保を最優先にご案内。\n\n【6. 研修/情報共有】\n- 朝礼：日替わり注意点と在庫状況を共有。\n- 終礼：売上/クレーム/改善点を3点で振り返り、翌日に反映。\n- 新人用：5分で読めるクイックガイドを休憩室に掲示。\n\n【7. よくある質問（FAQ 抜粋）】\nQ. 甘さ控えめの調整は可能？\nA. 可能。シロップ量を『半分/少なめ』に変更できます。\n\nQ. テイクアウト時にラテが薄く感じるケース\nA. 氷量過多が原因の可能性。ドリンク基準量を再確認し、氷量規定を厳守。\n\nQ. 予約可否や取り置き\nA. 店舗方針により異なるため、マネジャー判断。トーク例はマニュアル末尾参照。\n\n【8. 緊急時連絡】\n- 機器トラブル：ITサポート（内線 1234）\n- 物流遅延：ロジスティクス（内線 5678）\n- 品質/アレルゲン：品質管理部（内線 2468）\n\n【添付】\n- 運用チェックリスト（朝礼用）\n- クレーム一次対応カード（レジ脇掲示用）\n- 販促物設置図（A3）\n\n最初の3日間は想定外の問い合わせが増えます。各自が『自分ごと化』して情報共有を密に行い、ミスの早期発見・即時修正を重ねながら品質を高めていきましょう。ご協力のほど、よろしくお願いいたします。`,
     todoRequired: true,
     todoDone: false,
     sharedDone: false,
     audience: "全PTR",
     hasAttachment: false,
-    categories: ["業務連絡（通常）", "業務連絡（プロモ）"],
+    categories: ["プロモ", "マネジメント"],
   },
   {
     id: 1,
@@ -57,12 +59,19 @@ const baseBusinessComms: BusinessComm[] = [
     dept: "営業企画本部",
     date: "2025/11/21 10:15",
     content: "ここに業務連絡の詳細内容が表示されます。画像やテキストが含まれる可能性があります。サンプルとして実際の店舗告知画像を差し替え予定なので、レイアウト確認にご活用ください。",
+    publishPeriod: { start: "2025/11/18", end: "2025/11/30" },
+    todoPeriod: { start: "2025/11/18", end: "2024/11/25" },
+    images: [
+      { src: "https://placehold.jp/600x360.png", alt: "秋の新作プロモーションバナー1（ダミー）" },
+      { src: "https://placehold.jp/520x320.png", alt: "秋の新作プロモーションバナー2（ダミー）" },
+      { src: "https://placehold.jp/150x150.png", alt: "小サイズのサンプル画像（150x150）" },
+    ],
     todoRequired: true,
     todoDone: false,
     sharedDone: false,
     audience: "全PTR",
     hasAttachment: true,
-    categories: ["新作情報", "業務連絡（通常）"],
+    categories: ["プロモ", "ビバレッジ"],
   },
   {
     id: 2,
@@ -72,12 +81,14 @@ const baseBusinessComms: BusinessComm[] = [
     dept: "営業企画本部",
     date: "2025/11/13 19:15",
     content: "交通事情により、一部地域で冷蔵品の配送に遅延が発生しています。対象店舗一覧を添付していますので、到着状況をバックヤードで確認し、在庫不足時は代替提案トークで対応してください。",
+    publishPeriod: { start: "2025/11/12", end: "2025/11/16" },
+    todoPeriod: { start: "2025/11/12", end: "2024/11/15" },
     todoRequired: true,
     todoDone: true,
     sharedDone: false,
     audience: "SSV以上",
     hasAttachment: false,
-    categories: ["業務連絡（緊急）", "障害情報（物流）"],
+    categories: ["デリバリー", "災害"],
   },
   {
     id: 3,
@@ -87,12 +98,13 @@ const baseBusinessComms: BusinessComm[] = [
     dept: "営業企画本部",
     date: "2025/11/13 13:58",
     content: "店舗周辺で野生動物の目撃情報がありました。開店前後はバックヤード出入りを最低限にし、夜間はゴミ庫の施錠を必ず確認してください。市の防災窓口へ通報済みですが、新たな目撃があればすぐに共有を。",
+    publishPeriod: { start: "2025/11/10", end: "2025/11/20" },
     todoRequired: false,
     todoDone: false,
     sharedDone: true,
     audience: "SM",
     hasAttachment: true,
-    categories: ["サービス", "業務連絡（通常）"],
+    categories: ["災害", "オペレーション"],
   },
   {
     id: 4,
@@ -102,12 +114,18 @@ const baseBusinessComms: BusinessComm[] = [
     dept: "SC",
     date: "2025/11/13 13:56",
     content: "安全確保のための新しいガイドラインを策定しました。出入口・駐車場での声掛けフロー、警察連絡の判断基準、掲示物のテンプレートをまとめています。朝礼で5分共有し、勤務者全員の確認サインを回収してください。",
+    publishPeriod: { start: "2025/11/13", end: "2025/11/25" },
+    todoPeriod: { start: "2025/11/13", end: "2026/02/05" },
+    images: [
+      { src: "https://placehold.jp/640x360.png", alt: "屋外ガイドライン掲示例（ダミー）" },
+      { src: "https://placehold.jp/480x320.png", alt: "バックヤード掲示物サンプル（ダミー）" },
+    ],
     todoRequired: true,
     todoDone: false,
     sharedDone: false,
     audience: "全PTR",
     hasAttachment: true,
-    categories: ["業務連絡（緊急）", "業務連絡（プロモ）"],
+    categories: ["災害", "オペレーション"],
   },
   {
     id: 5,
@@ -117,12 +135,14 @@ const baseBusinessComms: BusinessComm[] = [
     dept: "SC",
     date: "2025/11/12 10:30",
     content: "通常の業務連絡です。確認をお願いします。週内に予定している販促物の設置やレジ周りの軽微な変更を一覧化していますので、担当者で手分けして進めてください。",
+    publishPeriod: { start: "2025/11/10", end: "2025/11/20" },
+    todoPeriod: { start: "2025/11/10", end: "2024/11/18" },
     todoRequired: true,
     todoDone: true,
     sharedDone: true,
     audience: "社員",
     hasAttachment: false,
-    categories: ["業務連絡（通常）", "リワード"],
+    categories: ["マネジメント", "オペレーション"],
   },
   {
     id: 6,
@@ -132,12 +152,14 @@ const baseBusinessComms: BusinessComm[] = [
     dept: "営業企画本部",
     date: "2025/11/07 12:13",
     content: "台風の接近に伴い、安全を考慮して配送を一時停止します。店舗は前日のうちに必要最低限の在庫を店頭・バックヤードへ移動し、開店可否の判断はマネジャーが行ってください。再開目処は追って連絡します。",
+    publishPeriod: { start: "2025/11/06", end: "2025/11/12" },
+    todoPeriod: { start: "2025/11/06", end: "2026/03/01" },
     todoRequired: true,
     todoDone: false,
     sharedDone: false,
     audience: "SSV以上",
     hasAttachment: false,
-    categories: ["業務連絡（緊急）", "障害情報（システム）"],
+    categories: ["災害", "デリバリー"],
   },
   {
     id: 7,
@@ -147,12 +169,17 @@ const baseBusinessComms: BusinessComm[] = [
     dept: "営業企画本部",
     date: "2025/11/07 12:12",
     content: "配送システムが復旧しました。順次出荷を再開します。未着の出荷分がないか配送実績を確認し、欠品が続く場合はロジスティクス窓口まで連絡してください。",
+    publishPeriod: { start: "2025/11/07", end: "2025/11/14" },
+    todoPeriod: { start: "2025/11/07", end: "2024/11/10" },
+    images: [
+      { src: "https://placehold.jp/720x400.png", alt: "配送状況ダッシュボードの画面イメージ（ダミー）" },
+    ],
     todoRequired: true,
     todoDone: true,
     sharedDone: true,
     audience: "SM",
     hasAttachment: true,
-    categories: ["業務連絡（緊急）", "対象:バリスタ向け"],
+    categories: ["デリバリー", "オペレーション"],
   },
   {
     id: 8,
@@ -167,7 +194,7 @@ const baseBusinessComms: BusinessComm[] = [
     sharedDone: true,
     audience: "全PTR",
     hasAttachment: false,
-    categories: ["業務連絡（緊急）", "対象:バリスタ向け"],
+    categories: ["デジタル", "デリバリー"],
   },
 ]
 
@@ -187,7 +214,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "全PTR",
     hasAttachment: true,
-    categories: ["サービス", "業務連絡（通常）"],
+    categories: ["オペレーション", "学習"],
   },
   {
     id: 10,
@@ -202,7 +229,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: true,
     audience: "SSV以上",
     hasAttachment: false,
-    categories: ["業務連絡（緊急）", "障害情報（システム）"],
+    categories: ["コーヒー", "オペレーション"],
   },
   {
     id: 11,
@@ -217,7 +244,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: true,
     audience: "全PTR",
     hasAttachment: true,
-    categories: ["サービス", "業務連絡（通常）"],
+    categories: ["デジタル", "学習"],
   },
   {
     id: 12,
@@ -232,7 +259,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "SSV以上",
     hasAttachment: true,
-    categories: ["リワード", "業務連絡（プロモ）"],
+    categories: ["プロモ", "MD"],
   },
   {
     id: 13,
@@ -247,7 +274,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "SSV以上",
     hasAttachment: true,
-    categories: ["業務連絡（緊急）", "障害情報（物流）"],
+    categories: ["フード", "災害"],
   },
   {
     id: 14,
@@ -262,7 +289,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: true,
     audience: "全PTR",
     hasAttachment: true,
-    categories: ["新作情報", "業務連絡（通常）"],
+    categories: ["MD", "プロモ"],
   },
   {
     id: 15,
@@ -277,7 +304,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: true,
     audience: "社員",
     hasAttachment: false,
-    categories: ["業務連絡（通常）"],
+    categories: ["オペレーション", "学習"],
   },
   {
     id: 16,
@@ -292,7 +319,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "全PTR",
     hasAttachment: true,
-    categories: ["業務連絡（通常）"],
+    categories: ["人事", "マネジメント"],
   },
   {
     id: 17,
@@ -307,7 +334,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "SSV以上",
     hasAttachment: false,
-    categories: ["業務連絡（緊急）", "障害情報（システム）"],
+    categories: ["デジタル", "DT"],
   },
   {
     id: 18,
@@ -322,7 +349,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "SSV以上",
     hasAttachment: true,
-    categories: ["対象:バリスタ向け", "業務連絡（通常）"],
+    categories: ["マネジメント", "オペレーション"],
   },
   {
     id: 19,
@@ -337,7 +364,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: true,
     audience: "全PTR",
     hasAttachment: false,
-    categories: ["業務連絡（通常）"],
+    categories: ["在庫管理", "フード"],
   },
   {
     id: 20,
@@ -352,7 +379,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "全PTR",
     hasAttachment: true,
-    categories: ["業務連絡（プロモ）", "リワード"],
+    categories: ["MD", "プロモ"],
   },
   {
     id: 21,
@@ -367,7 +394,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "SSV以上",
     hasAttachment: false,
-    categories: ["業務連絡（緊急）", "障害情報（システム）"],
+    categories: ["デジタル", "オペレーション"],
   },
   {
     id: 22,
@@ -382,7 +409,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: true,
     audience: "全PTR",
     hasAttachment: true,
-    categories: ["サービス", "業務連絡（通常）"],
+    categories: ["コーヒー", "学習"],
   },
   {
     id: 23,
@@ -397,7 +424,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: true,
     audience: "全PTR",
     hasAttachment: false,
-    categories: ["業務連絡（通常）"],
+    categories: ["イベント", "オペレーション"],
   },
   {
     id: 24,
@@ -412,7 +439,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "SM",
     hasAttachment: true,
-    categories: ["対象:バリスタ向け", "業務連絡（通常）"],
+    categories: ["コーヒー", "学習"],
   },
   {
     id: 25,
@@ -427,7 +454,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: true,
     audience: "SSV以上",
     hasAttachment: false,
-    categories: ["業務連絡（緊急）", "障害情報（システム）"],
+    categories: ["デジタル", "MOP"],
   },
   {
     id: 26,
@@ -442,7 +469,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "全PTR",
     hasAttachment: true,
-    categories: ["業務連絡（通常）"],
+    categories: ["在庫管理", "オペレーション"],
   },
   {
     id: 27,
@@ -517,7 +544,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: true,
     audience: "全PTR",
     hasAttachment: true,
-    categories: ["業務連絡（通常）"],
+    categories: ["オペレーション", "イベント"],
   },
   {
     id: 32,
@@ -532,7 +559,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "SSV以上",
     hasAttachment: true,
-    categories: ["対象:バリスタ向け", "業務連絡（通常）"],
+    categories: ["業務連絡（通常）"],
   },
   {
     id: 33,
@@ -622,7 +649,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "全PTR",
     hasAttachment: true,
-    categories: ["業務連絡（プロモ）", "サービス"],
+    categories: ["イベント", "コーヒー"],
   },
   {
     id: 39,
@@ -652,7 +679,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "SSV以上",
     hasAttachment: true,
-    categories: ["新作情報", "対象:バリスタ向け"],
+    categories: ["新作情報"],
   },
   {
     id: 41,
@@ -772,7 +799,7 @@ const extraBusinessCommsBase: BusinessComm[] = [
     sharedDone: false,
     audience: "SSV以上",
     hasAttachment: true,
-    categories: ["対象:バリスタ向け", "業務連絡（通常）"],
+    categories: ["業務連絡（通常）"],
   },
   {
     id: 49,

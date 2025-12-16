@@ -5,9 +5,9 @@
 
 ## 構成
 - ソース: `components/dashboard/hot-topics.tsx`（`Dashboard` から使用）。
-- レイアウト: 横スクロールのスライダー。`flex` + `gap-4` で並べ、1ビューに4枚表示されるよう各スライドの幅を `calc((100%-3rem)/4)` で固定（`aspect-square`）。
+- レイアウト: 横スクロールのスライダー。`flex` + `gap-4` で並べ、1ビューに4枚表示されるよう各スライドの幅を `calc((100%-3rem)/4)` で固定（`aspect-square`）。左右のナビゲーションボタンは隣接配置で画像と重ならない。
 - 操作: 左右の矢印ボタン（`lucide-react`の`ChevronLeft/Right`）で1枚ずつスムーススクロール。ホイール/ドラッグでもスクロール可能。
-- スタイル: 角丸・overflow hidden。`hover:scale-105` のトランジションで軽いズーム。背景は`bg-amber-100`を下地に使用。
+- スタイル: 角丸・overflow hidden。`hover:scale-105` のトランジションで軽いズーム。背景は`bg-amber-100`を下地に使用し、各スライドに薄い枠線（`border-slate-200`）を付与。
 
 ## データ/挙動
 - `data/hot-topics.ts` の `hotTopics` 配列を使用。`id/image/alt(/href)` を持つ。

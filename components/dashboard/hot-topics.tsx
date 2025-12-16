@@ -29,24 +29,24 @@ export function HotTopicsSection() {
   }
 
   return (
-    <div className="relative">
+    <div className="flex items-center gap-3">
       <button
         type="button"
         aria-label="前へ"
-        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full shadow p-1"
+        className="shrink-0 bg-white border border-slate-200 hover:bg-slate-50 rounded-full shadow-sm p-2"
         onClick={() => scrollBySlide("prev")}
       >
-        <ChevronLeft className="h-5 w-5" />
+        <ChevronLeft className="h-5 w-5 text-slate-700" />
       </button>
       <div
         ref={trackRef}
-        className="overflow-x-auto scrollbar-hidden"
+        className="overflow-x-auto scrollbar-hidden flex-1"
       >
         <div ref={listRef} className="flex gap-4 pb-2">
           {hotTopics.map((topic) => (
             <div
               key={topic.id}
-              className="relative aspect-square flex-[0_0_calc((100%-3rem)/4)] rounded-lg overflow-hidden bg-amber-100 shrink-0"
+              className="relative aspect-square flex-[0_0_calc((100%-3rem)/4)] rounded-lg overflow-hidden bg-amber-100 shrink-0 border border-slate-200"
             >
               <Image
                 src={topic.image}
@@ -61,10 +61,10 @@ export function HotTopicsSection() {
       <button
         type="button"
         aria-label="次へ"
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full shadow p-1"
+        className="shrink-0 bg-white border border-slate-200 hover:bg-slate-50 rounded-full shadow-sm p-2"
         onClick={() => scrollBySlide("next")}
       >
-        <ChevronRight className="h-5 w-5" />
+        <ChevronRight className="h-5 w-5 text-slate-700" />
       </button>
     </div>
   )

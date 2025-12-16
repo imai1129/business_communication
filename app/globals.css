@@ -193,6 +193,22 @@
   .business-comm-dialog .print-hidden {
     display: none !important;
   }
+  .status-badge {
+    color: black !important;
+    background: white !important;
+    border: 2px solid black !important;
+    box-shadow: none !important;
+  }
+  .status-badge-urgent {
+    background: repeating-linear-gradient(135deg, black 0, black 2px, white 2px, white 6px) !important;
+    color: black !important;
+    border-color: black !important;
+  }
+  .status-badge-default {
+    background: white !important;
+    color: black !important;
+    border-color: black !important;
+  }
 }
 
 @layer utilities {
