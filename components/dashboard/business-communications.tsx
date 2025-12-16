@@ -16,12 +16,27 @@ import { useMemo, useState, useLayoutEffect, useEffect, useCallback, useRef } fr
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { ArrowUpDown, CheckCircle2, ChevronDown, FileText, Paperclip, Check, Filter, Megaphone, Printer } from "lucide-react"
+import { format, parse, differenceInDays } from "date-fns"
+import { ja } from "date-fns/locale"
 import { businessComms } from "@/data/business-communications"
 import { cn } from "@/lib/utils"
 
 type BusinessCommunicationsSectionProps = {
   forceExpanded?: boolean
   forceFiltersOpen?: boolean
+}
+
+const formatDisplayDate = (value: string, withRelative: boolean = true) => {
+  try {
+    const hasTime = value.includes(" ")
+    const parsed = parse(value, hasTime ? "yyyy/MM/dd HH:mm" : "yyyy/MM/dd", new Date())
+    const base = format(parsed, hasTime ? "yyyy年MM月dd日(EEE) HH:mm" : "yyyy年MM月dd日(EEE)", { locale: ja })
+    if (!withRelative) return base
+    const days = differenceInDays(new Date(), parsed)
+    return `${base} (${days}日前)`
+  } catch {
+    return value
+  }
 }
 
 const markdownComponents = {
@@ -257,6 +272,11 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
           const hasMoreCategories = item.categories.length > maxCategoryChips
           const todoDone = todoState[item.id] ?? item.todoDone
           const sharedDone = sharedState[item.id] ?? item.sharedDone
+          const formattedDate = formatDisplayDate(item.date)
+          const formattedTodoStart =
+            item.todoRequired && item.todoPeriod?.start ? formatDisplayDate(item.todoPeriod.start, false) : undefined
+          const formattedTodoEnd =
+            item.todoRequired && item.todoPeriod?.end ? formatDisplayDate(item.todoPeriod.end, false) : undefined
           return (
             <Dialog key={item.id}>
               <DialogTrigger asChild>
@@ -326,7 +346,7 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                   </div>
                   <div className="relative flex items-stretch self-stretch text-sm text-slate-500 whitespace-nowrap ml-auto min-w-[140px] text-right py-0.5">
                     <div className="flex flex-col items-end justify-end gap-1 leading-tight text-sm text-slate-600 w-full pr-8">
-                      <span>{item.date}</span>
+                      <span>{formattedDate}</span>
                     </div>
                     <div className="absolute inset-y-0 right-0 flex items-center justify-center w-6">
                       {item.hasAttachment && <Paperclip className="h-5 w-5 text-slate-900" aria-label="添付あり" />}
@@ -371,29 +391,18 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                             {item.title}
                           </DialogTitle>
                         </div>
-                        <div className="hidden print:grid print:grid-cols-2 gap-2 text-sm text-slate-600 print:text-black">
-                          <div className="flex items-center gap-1">
-                            <span className="font-medium text-slate-800 print:text-black">公開日</span>
-                            <span>{item.date}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <span className="font-medium text-slate-800 print:text-black">送信部署</span>
-                            <span>{item.dept}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <span className="font-medium text-slate-800 print:text-black">対象職位</span>
-                            <span>{item.audience}</span>
-                          </div>
-                        </div>
                       </div>
                       <Button
                         className="hidden"
                       />
                     </div>
-                    <div className="space-y-1 text-[14px] mt-2 print:hidden">
+                    <div className="space-y-1 text-[14px] mt-2">
                       <p>送信部署: {item.dept}</p>
                       <p>対象職位: {item.audience}</p>
-                      <p>公開日付: {item.date}</p>
+                      <p>公開日付: {formattedDate}</p>
+                      {item.todoRequired && formattedTodoStart && formattedTodoEnd ? (
+                        <p>対応期間: {formattedTodoStart} - {formattedTodoEnd}</p>
+                      ) : null}
                       <p>タグ:{item.categories.map((cat) => (<span key={cat}> #{cat}</span>))}</p>
                     </div>
                     {item.images?.length ? (
