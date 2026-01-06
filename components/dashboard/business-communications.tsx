@@ -370,7 +370,7 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                       <X className="h-5 w-5 text-slate-700" />
                     </Button>
                   </DialogClose>
-                  <div className="-mx-6 max-h-[70vh] overflow-y-auto px-6 print:mx-0 print:px-0">
+                  <div className="-mx-6 max-h-[70vh] overflow-y-auto px-6 print:mx-0 print:px-0 print:max-h-none print:overflow-visible">
                       <div role="document" className="business-comm-print-area">
                         <DialogHeader>
                         <div className="flex items-start justify-between gap-4">
