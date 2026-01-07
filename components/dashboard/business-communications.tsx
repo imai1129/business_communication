@@ -362,12 +362,12 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                 <div className="relative">
                   <DialogClose asChild>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="icon"
-                      className="print:hidden absolute -top-12 -right-6 h-11 w-11 -translate-y-full transform rounded-full border-slate-300 bg-white shadow-lg hover:bg-slate-50 z-50"
+                      className="print:hidden absolute -top-9 -right-7 h-12 w-12 -translate-y-full transform rounded-full bg-transparent border-none shadow-none cursor-pointer hover:bg-transparent hover:border-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent z-50"
                       aria-label="閉じる"
                     >
-                      <X className="h-5 w-5 text-slate-700" />
+                      <X className="h-7 w-7 text-white" strokeWidth={5} />
                     </Button>
                   </DialogClose>
                   <div className="-mx-6 max-h-[70vh] overflow-y-auto px-6 print:mx-0 print:px-0 print:max-h-none print:overflow-visible">
