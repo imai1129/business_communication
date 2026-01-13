@@ -3,7 +3,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -16,7 +15,20 @@ import Link from "next/link"
 import { useMemo, useState, useLayoutEffect, useEffect, useCallback, useRef } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
-import { ArrowUpDown, CheckCircle2, ChevronDown, FileText, Paperclip, Check, Filter, Megaphone, Printer, X } from "lucide-react"
+import {
+  ArrowUpDown,
+  CheckCircle2,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  Paperclip,
+  Check,
+  Filter,
+  Megaphone,
+  Printer,
+  X,
+} from "lucide-react"
 import { format, parse, differenceInDays } from "date-fns"
 import { ja } from "date-fns/locale"
 import { businessComms } from "@/data/business-communications"
@@ -133,6 +145,8 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
   const [sharedState, setSharedState] = useState<Record<number, boolean>>(() =>
     Object.fromEntries(businessComms.map((item) => [item.id, item.sharedDone]))
   )
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [activeId, setActiveId] = useState<number | null>(null)
 
   const toggleFilter = (filter: string) => {
     setSelectedFilters((prev) => (prev.includes(filter) ? prev.filter((f) => f !== filter) : [...prev, filter]))
@@ -157,6 +171,30 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
       ? filteredBusinessComms
       : filteredBusinessComms.slice(0, maxExpandedCount)
     : filteredBusinessComms.slice(0, previewCount + 1)
+  const dialogItems = displayItems
+  const activeIndex = activeId === null ? -1 : dialogItems.findIndex((item) => item.id === activeId)
+  const activeItem = activeIndex >= 0 ? dialogItems[activeIndex] : null
+  const canGoPrev = activeIndex > 0
+  const canGoNext = activeIndex >= 0 && activeIndex < dialogItems.length - 1
+  const activeFormattedDate = activeItem ? formatDisplayDate(activeItem.date) : ""
+  const activeTodoStart =
+    activeItem && activeItem.todoRequired && activeItem.todoPeriod?.start
+      ? formatDisplayDate(activeItem.todoPeriod.start, false)
+      : undefined
+  const activeTodoEnd =
+    activeItem && activeItem.todoRequired && activeItem.todoPeriod?.end
+      ? formatDisplayDate(activeItem.todoPeriod.end, false)
+      : undefined
+  const activeTodoDone = activeItem ? (todoState[activeItem.id] ?? activeItem.todoDone) : false
+  const activeSharedDone = activeItem ? (sharedState[activeItem.id] ?? activeItem.sharedDone) : false
+  const goPrev = () => {
+    if (!canGoPrev) return
+    setActiveId(dialogItems[activeIndex - 1].id)
+  }
+  const goNext = () => {
+    if (!canGoNext) return
+    setActiveId(dialogItems[activeIndex + 1].id)
+  }
 
   const measureCategoryOverflow = useCallback(() => {
     const next: Record<number, boolean> = {}
@@ -186,6 +224,18 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
     window.addEventListener("resize", measureCategoryOverflow)
     return () => window.removeEventListener("resize", measureCategoryOverflow)
   }, [measureCategoryOverflow])
+
+  useEffect(() => {
+    if (!dialogOpen) return
+    if (dialogItems.length === 0) {
+      setDialogOpen(false)
+      setActiveId(null)
+      return
+    }
+    if (activeId === null || !dialogItems.some((item) => item.id === activeId)) {
+      setActiveId(dialogItems[0].id)
+    }
+  }, [dialogOpen, dialogItems, activeId])
 
   return (
     <section className="space-y-4">
@@ -260,33 +310,27 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
         </ScrollArea>
       )}
 
-      <div
-        className={cn(
-          "rounded-md border border-slate-100 divide-y divide-slate-100",
-          expanded ? "" : "max-h-[600px] overflow-y-auto custom-scrollbar"
-        )}
-      >
-        {displayItems.map((item, idx) => {
-          const isPartial = !expanded && idx === previewCount
-          const maxCategoryChips = 4
-          const displayedCategories = item.categories.slice(0, maxCategoryChips)
-          const hasMoreCategories = item.categories.length > maxCategoryChips
-          const todoDone = todoState[item.id] ?? item.todoDone
-          const sharedDone = sharedState[item.id] ?? item.sharedDone
-          const formattedDate = formatDisplayDate(item.date)
-          const formattedTodoStart =
-            item.todoRequired && item.todoPeriod?.start ? formatDisplayDate(item.todoPeriod.start, false) : undefined
-          const formattedTodoEnd =
-            item.todoRequired && item.todoPeriod?.end ? formatDisplayDate(item.todoPeriod.end, false) : undefined
-          return (
-            <Dialog key={item.id}>
-              <DialogTrigger asChild>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <div
+          className={cn(
+            "rounded-md border border-slate-100 divide-y divide-slate-100",
+            expanded ? "" : "max-h-[600px] overflow-y-auto custom-scrollbar"
+          )}
+        >
+          {displayItems.map((item, idx) => {
+            const isPartial = !expanded && idx === previewCount
+            const todoDone = todoState[item.id] ?? item.todoDone
+            const sharedDone = sharedState[item.id] ?? item.sharedDone
+            const formattedDate = formatDisplayDate(item.date)
+            return (
+              <DialogTrigger key={item.id} asChild>
                 <div
                   className={cn(
                     "py-2.5 px-3 hover:bg-slate-50 transition-colors cursor-pointer group flex items-center gap-2 relative",
                     item.status === "緊急" ? "bg-red-50" : "",
                     isPartial ? "max-h-24 overflow-hidden" : ""
                   )}
+                  onClick={() => setActiveId(item.id)}
                 >
                   {isPartial && <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />}
                   <div className="shrink-0 flex items-center gap-2">
@@ -355,134 +399,158 @@ export function BusinessCommunicationsSection({ forceExpanded = false, forceFilt
                   </div>
                 </div>
               </DialogTrigger>
-              <DialogContent
-                showCloseButton={false}
-                className="business-comm-dialog w-[90vw] md:w-[60vw] md:max-w-[1280px] overflow-visible"
-              >
-                <div className="relative">
+            )
+          })}
+        </div>
+        {activeItem && (
+          <DialogContent
+            showCloseButton={false}
+            className="business-comm-dialog w-[90vw] md:w-[60vw] md:max-w-[1280px] overflow-visible"
+          >
+            <div className="relative">
                   <DialogClose asChild>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="print:hidden absolute -top-9 -right-7 h-12 w-12 -translate-y-full transform rounded-full bg-transparent border-none shadow-none cursor-pointer hover:bg-transparent hover:border-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent z-50"
+                      className="print:hidden absolute -top-10 -right-7 h-12 w-12 -translate-y-full transform rounded-full bg-white border border-slate-200 shadow-md cursor-pointer hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent z-50"
                       aria-label="閉じる"
                     >
-                      <X className="h-7 w-7 text-white" strokeWidth={5} />
+                      <X className="h-6 w-6 text-slate-500" strokeWidth={2.5} />
                     </Button>
                   </DialogClose>
-                  <div className="-mx-6 max-h-[70vh] overflow-y-auto px-6 print:mx-0 print:px-0 print:max-h-none print:overflow-visible">
-                      <div role="document" className="business-comm-print-area">
-                        <DialogHeader>
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1 min-w-0 space-y-3">
-                            <div className="flex flex-wrap items-center gap-3">
-                              <Badge
-                                className={cn(
-                                  item.status === "緊急"
-                                    ? "bg-red-500"
-                                    : "bg-blue-500",
-                                  "text-white border-none rounded-sm px-2 text-[14px] font-semibold min-w-[60px] h-8 items-center justify-center status-badge",
-                                  item.status === "緊急" ? "status-badge-urgent" : "status-badge-default"
-                                )}
-                                aria-label={`業務連絡種別: ${item.status}`}
-                              >
-                                {item.status}
-                              </Badge>
-                              <DialogTitle className="text-xl leading-snug text-slate-900">
-                                {item.title}
-                              </DialogTitle>
-                            </div>
-                          </div>
-                          <Button
-                            variant="default"
-                            size="sm"
-                            className="print:hidden h-10 px-4 rounded-md bg-[color:var(--brand-green)] text-white hover:bg-[color:var(--brand-green)]/90 shadow-md shadow-[color:var(--brand-green)]/25"
-                            onClick={() => window.print()}
-                            aria-label="この業務連絡を印刷"
-                          >
-                            <span className="flex items-center gap-1 font-medium">
-                              <Printer className="h-4 w-4" />
-                              印刷
-                            </span>
-                          </Button>
-                        </div>
-                        <div className="space-y-1 text-[14px] mt-2">
-                          <p>送信部署: {item.dept}</p>
-                          <p>対象職位: {item.audience}</p>
-                          <p>公開日付: {formattedDate}</p>
-                          {item.todoRequired && formattedTodoStart && formattedTodoEnd ? (
-                            <p>対応期間: {formattedTodoStart} - {formattedTodoEnd}</p>
-                          ) : null}
-                          <p>タグ:{item.categories.map((cat) => (<span key={cat}> #{cat}</span>))}</p>
-                        </div>
-                        {item.images?.length ? (
-                          <div className="mt-4 space-y-4">
-                            {item.images.map((img) => (
-                              <figure key={img.src} className="flex flex-col items-start gap-2">
-                                <img
-                                  src={img.src}
-                                  alt={img.alt}
-                                  className="w-auto max-w-full h-auto border border-slate-200 bg-white"
-                                  loading={item.id === 1 ? "eager" : "lazy"}
-                                />
-                                <figcaption className="text-sm text-slate-500 print:text-black">{img.alt}</figcaption>
-                              </figure>
-                            ))}
-                          </div>
-                        ) : null}
-                      </DialogHeader>
-                      <div className="py-4">
-                        <div className="p-1">
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            components={markdownComponents}
-                          >
-                            {item.content}
-                          </ReactMarkdown>
-                        </div>
-                        <div className="mt-6 flex items-center justify-center gap-4 print-hidden">
-                          <Button
-                            variant={sharedDone ? "default" : "outline"}
-                            className="min-w-40"
-                            onClick={() =>
-                              setSharedState((prev) => ({ ...prev, [item.id]: !(prev[item.id] ?? item.sharedDone) }))
-                            }
-                            aria-pressed={sharedDone}
-                          >
-                            <span className="flex items-center gap-1">
-                              <Check className="h-4 w-4" />
-                              {sharedDone ? "店内共有済み" : "店内共有済にする"}
-                            </span>
-                          </Button>
-                          {item.todoRequired && (
-                            <Button
-                              className="min-w-40"
-                              variant={todoDone ? "default" : "outline"}
-                              onClick={() => {
-                                const next = !todoDone
-                                setTodoState((prev) => ({ ...prev, [item.id]: next }))
-                                if (next) {
-                                  setSharedState((prev) => ({ ...prev, [item.id]: true }))
-                                }
-                              }}
-                              aria-pressed={todoDone}
-                            >
-                              <span className="flex items-center gap-1">
-                                <Check className="h-4 w-4" />
-                                {todoDone ? "対応実施済み" : "対応実施済にする"}
-                              </span>
-                            </Button>
-                          )}
-                        </div>
+              <div className="-mx-6 max-h-[70vh] overflow-y-auto px-6 print:mx-0 print:px-0 print:max-h-none print:overflow-visible">
+                <div role="document" className="business-comm-print-area">
+                  <DialogHeader>
+                    <div className="space-y-2">
+                      <div className="flex justify-end">
+                        <Button
+                          variant="default"
+                          size="sm"
+                          className="print:hidden h-10 px-4 rounded-md bg-[color:var(--brand-green)] text-white hover:bg-[color:var(--brand-green)]/90 shadow-md shadow-[color:var(--brand-green)]/25"
+                          onClick={() => window.print()}
+                          aria-label="この業務連絡を印刷"
+                        >
+                          <span className="flex items-center gap-1 font-medium">
+                            <Printer className="h-4 w-4" />
+                            印刷
+                          </span>
+                        </Button>
                       </div>
+                      <div className="flex items-center gap-1 min-w-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="print:hidden h-10 w-10 text-slate-500 hover:text-slate-900"
+                          onClick={goPrev}
+                          disabled={!canGoPrev}
+                          aria-label="前の業務連絡"
+                        >
+                          <ChevronLeft className="h-6 w-6" aria-hidden />
+                        </Button>
+                        <Badge
+                          className={cn(
+                            activeItem.status === "緊急"
+                              ? "bg-red-500"
+                              : "bg-blue-500",
+                            "text-white border-none rounded-sm px-2 text-[14px] font-semibold min-w-[60px] h-8 items-center justify-center status-badge shrink-0",
+                            activeItem.status === "緊急" ? "status-badge-urgent" : "status-badge-default"
+                          )}
+                          aria-label={`業務連絡種別: ${activeItem.status}`}
+                        >
+                          {activeItem.status}
+                        </Badge>
+                        <DialogTitle className="text-xl leading-snug text-slate-900 min-w-0 break-words flex-1">
+                          {activeItem.title}
+                        </DialogTitle>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="print:hidden h-10 w-10 text-slate-500 hover:text-slate-900"
+                          onClick={goNext}
+                          disabled={!canGoNext}
+                          aria-label="次の業務連絡"
+                        >
+                          <ChevronRight className="h-6 w-6" aria-hidden />
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogHeader>
+                  <div className="px-11">
+                    <div className="space-y-1 text-[14px] mt-2">
+                      <p>送信部署: {activeItem.dept}</p>
+                      <p>対象職位: {activeItem.audience}</p>
+                      <p>公開日付: {activeFormattedDate}</p>
+                      {activeItem.todoRequired && activeTodoStart && activeTodoEnd ? (
+                        <p>対応期間: {activeTodoStart} - {activeTodoEnd}</p>
+                      ) : null}
+                      <p>タグ:{activeItem.categories.map((cat) => (<span key={cat}> #{cat}</span>))}</p>
+                    </div>
+                    {activeItem.images?.length ? (
+                      <div className="mt-4 space-y-4">
+                        {activeItem.images.map((img) => (
+                          <figure key={img.src} className="flex flex-col items-start gap-2">
+                            <img
+                              src={img.src}
+                              alt={img.alt}
+                              className="w-auto max-w-full h-auto border border-slate-200 bg-white"
+                              loading={activeItem.id === 1 ? "eager" : "lazy"}
+                            />
+                            <figcaption className="text-sm text-slate-500 print:text-black">{img.alt}</figcaption>
+                          </figure>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="py-4 px-11">
+                    <div>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={markdownComponents}
+                      >
+                        {activeItem.content}
+                      </ReactMarkdown>
+                    </div>
+                    <div className="mt-6 flex items-center justify-center gap-4 print-hidden">
+                      <Button
+                        variant={activeSharedDone ? "default" : "outline"}
+                        className="min-w-40"
+                        onClick={() =>
+                          setSharedState((prev) => ({ ...prev, [activeItem.id]: !(prev[activeItem.id] ?? activeItem.sharedDone) }))
+                        }
+                        aria-pressed={activeSharedDone}
+                      >
+                        <span className="flex items-center gap-1">
+                          <Check className="h-4 w-4" />
+                          {activeSharedDone ? "店内共有済み" : "店内共有済にする"}
+                        </span>
+                      </Button>
+                      {activeItem.todoRequired && (
+                        <Button
+                          className="min-w-40"
+                          variant={activeTodoDone ? "default" : "outline"}
+                          onClick={() => {
+                            const next = !activeTodoDone
+                            setTodoState((prev) => ({ ...prev, [activeItem.id]: next }))
+                            if (next) {
+                              setSharedState((prev) => ({ ...prev, [activeItem.id]: true }))
+                            }
+                          }}
+                          aria-pressed={activeTodoDone}
+                        >
+                          <span className="flex items-center gap-1">
+                            <Check className="h-4 w-4" />
+                            {activeTodoDone ? "対応実施済み" : "対応実施済にする"}
+                          </span>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
-              </DialogContent>
-            </Dialog>
-          )
-        })}
-      </div>
+              </div>
+            </div>
+          </DialogContent>
+        )}
+      </Dialog>
       {!expanded && !forceExpanded && filteredBusinessComms.length > previewCount + 1 && (
         <div className="flex justify-center mt-3">
           <Button variant="outline" size="sm" asChild>
